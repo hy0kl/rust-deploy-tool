@@ -39,7 +39,7 @@ fn usage(argv_0: &String) {
     std::process::exit(0);
 }
 
-static DEBUG: bool = true;
+static DEBUG: bool = false;
 
 fn main() {
     let args: Vec<_> = env::args().collect();
@@ -86,6 +86,9 @@ fn main() {
     for index in 0 .. hosts_len {
         hosts_conf.push(deploy_conf.hosts_conf[index].clone());
     }
+
+    println!("          ===== {} ======\n", work_conf.project);
+
     let handles: Vec<_> = hosts_conf.into_iter().map(|host| {
         let user = deploy_conf.user.clone();
         let path = deploy_conf.path.clone();
@@ -106,9 +109,11 @@ fn main() {
                 .output()
                 .unwrap_or_else(|e| { panic!("failed to execute process: {}", e) });
 
+            println!("--- Start {} for {}@{} ---", operate, user, host);
             if DEBUG { println!("status: {}", output.status); }
             println!("stdout: {}", String::from_utf8_lossy(&output.stdout));
             println!("stderr: {}", String::from_utf8_lossy(&output.stderr));
+            println!("--- End {} for {}@{} ---\n", operate, user, host);
         })
     }).collect();
 
