@@ -109,11 +109,15 @@ fn main() {
                 .output()
                 .unwrap_or_else(|e| { panic!("failed to execute process: {}", e) });
 
-            println!("--- Start {} for {}@{} ---", operate, user, host);
+            // 解决多线程穿插输出的问题
+            let mut output_buf = "".to_string();
+            output_buf = output_buf + &(format!("--- Start {} for {}@{} ---\n", operate, user, host));
             if DEBUG { println!("status: {}", output.status); }
-            println!("stdout: {}", String::from_utf8_lossy(&output.stdout));
-            println!("stderr: {}", String::from_utf8_lossy(&output.stderr));
-            println!("--- End {} for {}@{} ---\n", operate, user, host);
+            output_buf = output_buf + &(format!("stdout: {}\n", String::from_utf8_lossy(&output.stdout)));
+            output_buf = output_buf + &(format!("stderr: {}\n", String::from_utf8_lossy(&output.stderr)));
+            output_buf = output_buf + &(format!("--- End {} for {}@{} ---\n\n", operate, user, host));
+
+            println!("{}", output_buf);
         })
     }).collect();
 
