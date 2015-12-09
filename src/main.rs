@@ -120,8 +120,10 @@ fn main() {
             output_buf = output_buf + &(format!("stderr: {}\n", String::from_utf8_lossy(&output.stderr)));
             output_buf = output_buf + &(format!("--- End {} for {}@{} ---\n\n", operate, user, host));
 
-            let _ct = mutex_ct.lock().unwrap();
-            println!("{}", output_buf);
+            {
+                let _ct = mutex_ct.lock().unwrap();
+                println!("{}", output_buf);
+            }
         })
     }).collect();
 
