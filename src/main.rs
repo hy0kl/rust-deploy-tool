@@ -8,6 +8,7 @@ use std::fs::File;
 use std::io::Read;
 
 use std::thread;
+use std::sync::{Mutex, Arc};
 use std::process::Command;
 
 struct WorkConf {
@@ -81,11 +82,12 @@ fn main() {
         .expect("Can NOT parse JSON config data.");
     if DEBUG { println!("JSON: {}", json::encode(&deploy_conf).unwrap()); }
 
-    let mut hosts_conf  = Vec::new();
+    let mut hosts_conf = Vec::new();
     let hosts_len = deploy_conf.hosts_conf.len();
     for index in 0 .. hosts_len {
         hosts_conf.push(deploy_conf.hosts_conf[index].clone());
     }
+    let mutex_ct = Arc::new(Mutex::new(vec![1]));
 
     println!("          ===== {} ======\n", work_conf.project);
 
@@ -94,6 +96,7 @@ fn main() {
         let path = deploy_conf.path.clone();
         let operate = work_conf.operate.clone();
         let head    = work_conf.head.clone();
+        let mutex_ct= mutex_ct.clone();
         thread::spawn(move || {
             let cmd = if "deploy".to_string() == operate {
                 format!("ssh {}@{} \"cd {} && git pull && git log -1 | awk '{{if (\\$1 ~/commit/) {{print \\$2}}}}' 2>&1\"",
@@ -117,6 +120,7 @@ fn main() {
             output_buf = output_buf + &(format!("stderr: {}\n", String::from_utf8_lossy(&output.stderr)));
             output_buf = output_buf + &(format!("--- End {} for {}@{} ---\n\n", operate, user, host));
 
+            let _ct = mutex_ct.lock().unwrap();
             println!("{}", output_buf);
         })
     }).collect();
