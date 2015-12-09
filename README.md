@@ -1,7 +1,7 @@
 # rust-deploy-tool
 rust-deploy-tool
 
-# rust 实现 github/gitlab 部署项目
+# rust 实现 github/gitlab 部署的项目工具
 
 ```
 1. 安装 Rust
