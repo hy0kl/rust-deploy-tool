@@ -146,7 +146,7 @@ fn main() {
                     Colour::Red.bold().paint("FAIL!"),
                     user_at_host));
             }
-            output_buf = output_buf + &(format!("--- {} ---\n\n", Colour::Cyan.bold().paint("END")));
+            output_buf = output_buf + &(format!("--- {} ---\n", Colour::Cyan.bold().paint("END")));
 
             {
                 let _ct = mutex_ct.lock().unwrap();
