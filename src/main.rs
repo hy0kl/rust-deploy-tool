@@ -125,7 +125,7 @@ fn main() {
                 .unwrap_or_else(|e| { panic!("failed to execute process: {}", e) });
 
             let user_at_host = format!("{}{}{}",
-                Green.bold().paint(user.to_string()),
+                Yellow.bold().paint(user.to_string()),
                 Red.bold().paint("@"),
                 Cyan.bold().paint(host.to_string()));
             // 解决多线程穿插输出的问题
@@ -140,7 +140,7 @@ fn main() {
                     Green.bold().paint("SUCCESS"),
                     user_at_host));
             } else {
-                output_buf = output_buf + &(format!("{} {}\n", Red.bold().blink().paint("stderr:"),String::from_utf8_lossy(&output.stderr)));
+                output_buf = output_buf + &(format!("{} {}\n", Red.bold().blink().paint("stderr:"), String::from_utf8_lossy(&output.stderr)));
                 output_buf = output_buf + &(format!("{} {} for {}\n",
                     Purple.bold().paint(operate.to_string()),
                     Red.bold().blink().paint("FAIL!"),
