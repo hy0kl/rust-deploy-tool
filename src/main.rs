@@ -101,7 +101,7 @@ fn main() {
     }
     let mutex_ct = Arc::new(Mutex::new(vec![1]));
 
-    println!("          ===== {} ======\n", work_conf.project);
+    println!("          ===== {} ======\n", Colour::Blue.bold().paint(work_conf.project.to_string()));
 
     let handles: Vec<_> = hosts_conf.into_iter().map(|host| {
         let user = deploy_conf.user.clone();
@@ -125,12 +125,18 @@ fn main() {
                 .unwrap_or_else(|e| { panic!("failed to execute process: {}", e) });
 
             // 解决多线程穿插输出的问题
+            let user_at_host = format!("{}{}{}",
+                Colour::Green.bold().paint(user.to_string()),
+                Colour::Red.bold().paint("@"),
+                Colour::Cyan.bold().paint(host.to_string()));
             let mut output_buf = "".to_string();
-            output_buf = output_buf + &(format!("--- Start {} for {}@{} ---\n", operate, user, host));
+            output_buf = output_buf + &(format!("--- {} {} for {} ---\n",
+                Colour::Cyan.bold().paint("START"),
+                Colour::Purple.bold().paint(operate.to_string()), user_at_host));
             if DEBUG { println!("status: {}", output.status); }
-            output_buf = output_buf + &(format!("stdout: {}\n", String::from_utf8_lossy(&output.stdout)));
-            output_buf = output_buf + &(format!("stderr: {}\n", String::from_utf8_lossy(&output.stderr)));
-            output_buf = output_buf + &(format!("--- End {} for {}@{} ---\n\n", operate, user, host));
+            output_buf = output_buf + &(format!("{} {}\n", Colour::Green.bold().paint("stdout:"), String::from_utf8_lossy(&output.stdout)));
+            output_buf = output_buf + &(format!("{} {}\n", Colour::Red.bold().paint("stderr:"),String::from_utf8_lossy(&output.stderr)));
+            output_buf = output_buf + &(format!("--- {} ---\n\n", Colour::Cyan.bold().paint("END")));
 
             {
                 let _ct = mutex_ct.lock().unwrap();
