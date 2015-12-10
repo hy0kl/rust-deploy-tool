@@ -11,6 +11,9 @@ use std::thread;
 use std::sync::{Mutex, Arc};
 use std::process::Command;
 
+extern crate ansi_term;
+use ansi_term::Colour;
+
 struct WorkConf {
     project: String,
     operate: String,
@@ -34,9 +37,18 @@ struct DeployConf {
 }
 
 fn usage(argv_0: &String) {
-    println!("-----USAGE----");
-    println!("{} project deploy             deploy project with latest <head>.", argv_0);
-    println!("{} project rollback <head>    rollback with <head>.", argv_0);
+    println!("\n{}", Colour::Cyan.bold().paint("-----USAGE----"));
+    println!("{} {} {}             {}",
+        Colour::Green.bold().paint(argv_0.to_string()),
+        Colour::Blue.bold().paint("project"),
+        Colour::Yellow.bold().paint("deploy"),
+        Colour::Red.paint("deploy project with latest <head>."));
+    println!("{} {} {} {}    {}\n",
+        Colour::Green.bold().paint(argv_0.to_string()),
+        Colour::Blue.bold().paint("project"),
+        Colour::Yellow.bold().paint("rollback"),
+        Colour::Purple.bold().paint("<head>"),
+        Colour::Red.paint("rollback with <head>."));
     std::process::exit(0);
 }
 

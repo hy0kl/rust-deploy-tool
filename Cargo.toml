@@ -5,3 +5,4 @@ authors = ["Jerry Yang <hy0kle@gmail.com>"]
 
 [dependencies]
 rustc-serialize = "*"
+ansi_term = "*"
