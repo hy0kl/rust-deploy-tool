@@ -124,22 +124,33 @@ fn main() {
                 .output()
                 .unwrap_or_else(|e| { panic!("failed to execute process: {}", e) });
 
-            // 解决多线程穿插输出的问题
             let user_at_host = format!("{}{}{}",
                 Colour::Green.bold().paint(user.to_string()),
                 Colour::Red.bold().paint("@"),
                 Colour::Cyan.bold().paint(host.to_string()));
+            // 解决多线程穿插输出的问题
             let mut output_buf = "".to_string();
             output_buf = output_buf + &(format!("--- {} {} for {} ---\n",
                 Colour::Cyan.bold().paint("START"),
                 Colour::Purple.bold().paint(operate.to_string()), user_at_host));
-            if DEBUG { println!("status: {}", output.status); }
-            output_buf = output_buf + &(format!("{} {}\n", Colour::Green.bold().paint("stdout:"), String::from_utf8_lossy(&output.stdout)));
-            output_buf = output_buf + &(format!("{} {}\n", Colour::Red.bold().paint("stderr:"),String::from_utf8_lossy(&output.stderr)));
+            if Some(0) == output.status.code() {
+                output_buf = output_buf + &(format!("{}\n", String::from_utf8_lossy(&output.stdout)));
+                output_buf = output_buf + &(format!("{} {} for {}\n",
+                    Colour::Purple.bold().paint(operate.to_string()),
+                    Colour::Green.bold().paint("SUCCESS"),
+                    user_at_host));
+            } else {
+                output_buf = output_buf + &(format!("{} {}\n", Colour::Red.bold().paint("stderr:"),String::from_utf8_lossy(&output.stderr)));
+                output_buf = output_buf + &(format!("{} {} for {}\n",
+                    Colour::Purple.bold().paint(operate.to_string()),
+                    Colour::Red.bold().paint("FAIL!"),
+                    user_at_host));
+            }
             output_buf = output_buf + &(format!("--- {} ---\n\n", Colour::Cyan.bold().paint("END")));
 
             {
                 let _ct = mutex_ct.lock().unwrap();
+                if DEBUG { println!("status: {:?}", output.status.code()); }
                 println!("{}", output_buf);
             }
         })
