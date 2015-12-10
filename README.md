@@ -1,7 +1,10 @@
 # rust-deploy-tool
 rust-deploy-tool
 
-# rust 实现 github/gitlab 部署的项目工具
+# rust 实现 github/gitlab 部署项目的小工具
+
+* 并行化部署项目,防止机器多时出现部署代码不一致的情况;
+* Terminal 彩色化输出,有趣味,更实用.
 
 ```
 1. 安装 Rust
