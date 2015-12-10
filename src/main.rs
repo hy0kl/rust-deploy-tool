@@ -12,7 +12,7 @@ use std::sync::{Mutex, Arc};
 use std::process::Command;
 
 extern crate ansi_term;
-use ansi_term::Colour;
+use ansi_term::Colour::{Red, Green, Yellow, Blue, Purple, Cyan};
 
 struct WorkConf {
     project: String,
@@ -37,18 +37,18 @@ struct DeployConf {
 }
 
 fn usage(argv_0: &String) {
-    println!("\n{}", Colour::Cyan.bold().paint("-----USAGE----"));
+    println!("\n{}", Cyan.bold().paint("-----USAGE----"));
     println!("{} {} {}             {}",
-        Colour::Green.bold().paint(argv_0.to_string()),
-        Colour::Blue.bold().paint("project"),
-        Colour::Yellow.bold().paint("deploy"),
-        Colour::Red.paint("deploy project with latest <head>."));
+        Green.bold().paint(argv_0.to_string()),
+        Blue.bold().paint("project"),
+        Yellow.bold().paint("deploy"),
+        Red.paint("deploy project with latest <head>."));
     println!("{} {} {} {}    {}\n",
-        Colour::Green.bold().paint(argv_0.to_string()),
-        Colour::Blue.bold().paint("project"),
-        Colour::Yellow.bold().paint("rollback"),
-        Colour::Purple.bold().paint("<head>"),
-        Colour::Red.paint("rollback with <head>."));
+        Green.bold().paint(argv_0.to_string()),
+        Blue.bold().paint("project"),
+        Yellow.bold().paint("rollback"),
+        Purple.bold().paint("<head>"),
+        Red.paint("rollback with <head>."));
     std::process::exit(0);
 }
 
@@ -101,7 +101,7 @@ fn main() {
     }
     let mutex_ct = Arc::new(Mutex::new(vec![1]));
 
-    println!("          ===== {} ======\n", Colour::Blue.bold().paint(work_conf.project.to_string()));
+    println!("          ====== {} ======\n", Blue.bold().paint(work_conf.project.to_string()));
 
     let handles: Vec<_> = hosts_conf.into_iter().map(|host| {
         let user = deploy_conf.user.clone();
@@ -125,28 +125,28 @@ fn main() {
                 .unwrap_or_else(|e| { panic!("failed to execute process: {}", e) });
 
             let user_at_host = format!("{}{}{}",
-                Colour::Green.bold().paint(user.to_string()),
-                Colour::Red.bold().paint("@"),
-                Colour::Cyan.bold().paint(host.to_string()));
+                Green.bold().paint(user.to_string()),
+                Red.bold().paint("@"),
+                Cyan.bold().paint(host.to_string()));
             // 解决多线程穿插输出的问题
             let mut output_buf = "".to_string();
             output_buf = output_buf + &(format!("--- {} {} for {} ---\n",
-                Colour::Cyan.bold().paint("START"),
-                Colour::Purple.bold().paint(operate.to_string()), user_at_host));
+                Cyan.bold().paint("START"),
+                Purple.bold().paint(operate.to_string()), user_at_host));
             if Some(0) == output.status.code() {
                 output_buf = output_buf + &(format!("{}\n", String::from_utf8_lossy(&output.stdout)));
                 output_buf = output_buf + &(format!("{} {} for {}\n",
-                    Colour::Purple.bold().paint(operate.to_string()),
-                    Colour::Green.bold().paint("SUCCESS"),
+                    Purple.bold().paint(operate.to_string()),
+                    Green.bold().paint("SUCCESS"),
                     user_at_host));
             } else {
-                output_buf = output_buf + &(format!("{} {}\n", Colour::Red.bold().paint("stderr:"),String::from_utf8_lossy(&output.stderr)));
+                output_buf = output_buf + &(format!("{} {}\n", Red.bold().blink().paint("stderr:"),String::from_utf8_lossy(&output.stderr)));
                 output_buf = output_buf + &(format!("{} {} for {}\n",
-                    Colour::Purple.bold().paint(operate.to_string()),
-                    Colour::Red.bold().paint("FAIL!"),
+                    Purple.bold().paint(operate.to_string()),
+                    Red.bold().blink().paint("FAIL!"),
                     user_at_host));
             }
-            output_buf = output_buf + &(format!("--- {} ---\n", Colour::Cyan.bold().paint("END")));
+            output_buf = output_buf + &(format!("--- {} ---\n", Cyan.bold().paint("END")));
 
             {
                 let _ct = mutex_ct.lock().unwrap();
