@@ -159,4 +159,6 @@ fn main() {
     for h in handles {
         h.join().unwrap();
     }
+
+    println!("{}", Green.bold().paint("Job is done."));
 }
